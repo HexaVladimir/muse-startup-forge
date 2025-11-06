@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import AnimatedCircles from "./AnimatedCircles";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="relative min-h-screen gradient-bg flex items-center justify-center overflow-hidden">
       <AnimatedCircles />
@@ -23,6 +26,7 @@ const HeroSection = () => {
               variant="hero" 
               size="lg"
               className="text-lg px-8 py-6 h-auto"
+              onClick={() => navigate("/auth")}
             >
               Get Started
               <ArrowRight className="ml-2" />
