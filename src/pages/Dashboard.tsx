@@ -1,14 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Lightbulb, Sparkles, Save, LogOut, Heart } from "lucide-react";
 import AnimatedCircles from "@/components/AnimatedCircles";
-import { supabase } from "@/integrations/supabase/client";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [startupName, setStartupName] = useState("");
   const [areaOfInterest, setAreaOfInterest] = useState("");
   const [generatedIdea, setGeneratedIdea] = useState<any>(null);
@@ -33,11 +30,6 @@ const Dashboard = () => {
     console.log("Saving idea:", generatedIdea);
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
-
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
       <AnimatedCircles />
@@ -57,10 +49,7 @@ const Dashboard = () => {
               <a href="/saved" className="text-foreground/80 hover:text-foreground transition-colors">
                 Saved Ideas
               </a>
-              <button 
-                onClick={handleLogout}
-                className="text-foreground/80 hover:text-foreground transition-colors flex items-center gap-2"
-              >
+              <button className="text-foreground/80 hover:text-foreground transition-colors flex items-center gap-2">
                 <LogOut className="w-4 h-4" />
                 Log Out
               </button>
