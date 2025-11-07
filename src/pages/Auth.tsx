@@ -97,10 +97,13 @@ const Auth = () => {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-background/50 backdrop-blur-md border-b border-border/50">
         <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <button 
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+          >
             <Lightbulb className="w-6 h-6 text-primary" />
             <span className="text-xl font-semibold">Startup Idea Generator</span>
-          </div>
+          </button>
         </div>
       </header>
 
