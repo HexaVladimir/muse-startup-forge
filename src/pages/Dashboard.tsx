@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Lightbulb, Sparkles, Save, LogOut, Heart } from "lucide-react";
 import AnimatedCircles from "@/components/AnimatedCircles";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,6 +63,29 @@ const Dashboard = () => {
     navigate("/");
   };
 
+  const getUserInitials = () => {
+    if (!user) return "U";
+    
+    const metadata = user.user_metadata;
+    const firstName = metadata?.first_name || "";
+    const lastName = metadata?.last_name || "";
+    
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    }
+    
+    // Fallback to email
+    if (user.email) {
+      const emailParts = user.email.split('@')[0].split('.');
+      if (emailParts.length >= 2) {
+        return `${emailParts[0].charAt(0)}${emailParts[1].charAt(0)}`.toUpperCase();
+      }
+      return user.email.substring(0, 2).toUpperCase();
+    }
+    
+    return "U";
+  };
+
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
       <AnimatedCircles />
@@ -91,6 +115,11 @@ const Dashboard = () => {
                 <LogOut className="w-4 h-4" />
                 Log Out
               </button>
+              <Avatar className="w-8 h-8 rounded-lg bg-primary">
+                <AvatarFallback className="bg-primary text-primary-foreground rounded-lg font-semibold">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
             </div>
           </div>
         </nav>
