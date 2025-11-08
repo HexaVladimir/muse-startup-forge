@@ -19,6 +19,7 @@ const Auth = () => {
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +92,51 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address to reset your password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Please check your email for a password reset link.",
+      });
+      
+      setIsForgotPassword(false);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
       <AnimatedCircles />
@@ -121,18 +167,20 @@ const Auth = () => {
                 </div>
               </div>
               <h1 className="text-3xl font-bold mb-2">
-                {isLogin ? "Welcome Back" : "Get Started"}
+                {isForgotPassword ? "Reset Password" : (isLogin ? "Welcome Back" : "Get Started")}
               </h1>
               <p className="text-muted-foreground">
-                {isLogin 
-                  ? "Sign in to continue generating ideas" 
-                  : "Create your account to start"}
+                {isForgotPassword
+                  ? "Enter your email to receive a password reset link"
+                  : (isLogin 
+                    ? "Sign in to continue generating ideas" 
+                    : "Create your account to start")}
               </p>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {!isLogin && (
+            <form onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit} className="space-y-5">
+              {!isLogin && !isForgotPassword && (
                 <>
                   {/* Profile Picture Upload */}
                   <div className="space-y-2">
@@ -206,39 +254,55 @@ const Auth = () => {
               </div>
 
               {/* Password */}
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-background/50 border-border/50 focus:border-primary transition-colors pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
+              {!isForgotPassword && (
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-background/50 border-border/50 focus:border-primary transition-colors pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Forgot Password - Login Only */}
-              {isLogin && (
+              {isLogin && !isForgotPassword && (
                 <div className="text-right">
                   <button
                     type="button"
+                    onClick={() => setIsForgotPassword(true)}
                     className="text-sm text-primary hover:text-primary/80 transition-colors"
                   >
                     Forgot password?
+                  </button>
+                </div>
+              )}
+
+              {/* Back to Login */}
+              {isForgotPassword && (
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => setIsForgotPassword(false)}
+                    className="text-sm text-primary hover:text-primary/80 transition-colors"
+                  >
+                    Back to Login
                   </button>
                 </div>
               )}
@@ -250,22 +314,24 @@ const Auth = () => {
                 className="w-full mt-6 h-12 text-base font-semibold hover:scale-105 transition-transform"
                 disabled={isLoading}
               >
-                {isLoading ? "Please wait..." : (isLogin ? "Login" : "Create Account")}
+                {isLoading ? "Please wait..." : (isForgotPassword ? "Send Reset Link" : (isLogin ? "Login" : "Create Account"))}
               </Button>
             </form>
 
             {/* Toggle Between Login/Signup */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <button
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-primary hover:text-primary/80 font-semibold transition-colors"
-                >
-                  {isLogin ? "Sign up" : "Login"}
-                </button>
-              </p>
-            </div>
+            {!isForgotPassword && (
+              <div className="mt-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                  {isLogin ? "Don't have an account? " : "Already have an account? "}
+                  <button
+                    onClick={() => setIsLogin(!isLogin)}
+                    className="text-primary hover:text-primary/80 font-semibold transition-colors"
+                  >
+                    {isLogin ? "Sign up" : "Login"}
+                  </button>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </main>
