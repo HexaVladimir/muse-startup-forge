@@ -112,16 +112,22 @@ const SavedIdeas = () => {
         <nav className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <button 
-              onClick={() => navigate("/app")}
+              onClick={() => navigate("/")}
               className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Lightbulb className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-semibold">Idea Generation</span>
+              <span className="text-xl font-semibold">Startup Idea Generator</span>
             </button>
             
             <div className="flex items-center gap-6">
+              <button 
+                onClick={() => navigate("/app")}
+                className="text-foreground/80 hover:text-foreground transition-colors font-medium"
+              >
+                Idea Generation
+              </button>
               <button 
                 onClick={handleLogout}
                 className="text-foreground/80 hover:text-foreground transition-colors flex items-center gap-2"
