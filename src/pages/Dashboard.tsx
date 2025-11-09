@@ -72,9 +72,31 @@ const Dashboard = () => {
     }
   };
 
-  const handleSave = () => {
-    // Placeholder for save functionality
-    console.log("Saving idea:", generatedIdea);
+  const handleSave = async () => {
+    if (!generatedIdea || !user) return;
+
+    try {
+      const { error } = await supabase.from('saved_ideas').insert({
+        user_id: user.id,
+        startup_name: generatedIdea.name,
+        area_of_interest: areaOfInterest,
+        idea_data: generatedIdea
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Idea Saved!",
+        description: "Your startup idea has been saved successfully.",
+      });
+    } catch (error) {
+      console.error('Error saving idea:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save idea. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleLogout = async () => {
