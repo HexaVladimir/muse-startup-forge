@@ -3,9 +3,11 @@ import { Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PricingSection = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleProTrial = async () => {
     setIsLoading(true);
@@ -102,7 +104,7 @@ const PricingSection = () => {
                 variant={plan.popular ? "hero" : "outline"}
                 className="w-full"
                 size="lg"
-                onClick={plan.popular ? handleProTrial : undefined}
+                onClick={plan.popular ? handleProTrial : () => navigate('/auth')}
                 disabled={isLoading && plan.popular}
               >
                 {isLoading && plan.popular ? "Loading..." : plan.cta}
