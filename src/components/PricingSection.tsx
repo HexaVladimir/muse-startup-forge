@@ -44,7 +44,7 @@ const PricingSection = () => {
     },
     {
       name: "Pro",
-      price: "$9",
+      price: "$10",
       period: "per month",
       features: [
         "Unlimited AI-generated ideas",
